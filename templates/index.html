@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Projekt ISS</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!-- D3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="static/plotly-latest.min.js"></script>
+</head>
+
+<body>
+<!-- Navbar Component -->
+<nav class="navbar navbar-expand navbar-light bg-custom p-0 pl-1 mb-4 mt-4">
+	 <div class="container justify-content-center">
+    		<h3 class="font-weight-bold">Symulacja procesu napełniania zbiornika</h3>
+	</div>
+</nav>
+<!-- End of navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card text-center ">
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col-12" data-toggle="tooltip" data-placement="left"
+                             title="Poziom wody">
+                            <div class="progress mt-2">
+                                <div class="progress-bar  progress-bar-striped progress-bar-animated bg-info"
+                                     role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0"
+                                     aria-valuemax="100">25%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8 mb-5 ">
+                <div class="card text-center ">
+                    <div class="card-header">
+                        <h2 class=" m-0">Wykresy</h2>
+                    </div>
+                    <div class="chart" id="linegraph">
+                        {% for id in ids %}
+                        <div id="{{id}}"></div>
+                        {% endfor %}
+
+                        <script type="text/javascript">
+                            let graphs = {{plot | safe}}
+                            let ids = {{ids | safe}}
+                            for (let i in graphs) {
+                                Plotly.plot(ids[i],
+                                    graphs[i].data, graphs[i].layout || {});
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-5 ">
+                <div class="card ">
+                    <div class="card-header">
+                        <h2 class="h3  text-center m-0">Parametry symulacji</h2>
+                    </div>
+
+                    <div class="row card-body pt-0 pb-0">
+                        <div class="card-body pb-1">
+                            <p class="card-title h5 text-center ">Wpisz parametry symulacji: </p>
+                            <p class="card-text ">
+                            <form action="http://localhost:5000/" method="POST" class="needs-validation" >
+                                <div class="form-group">
+                                    <label for="initial_lvl">Poziom początkowy:</label><br>
+                                    <input type="number" step="any" id="initial_lvl" name="initial_lvl" required>
+                                    <small id="input1HelpInline" class="text-muted">
+                                        <0; 100>
+                                    </small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="desired_lvl">Poziom docelowy:</label><br>
+                                    <input type="number" step="any" id="desired_lvl" name="desired_lvl" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                    <small id="input2HelpInline" class="text-muted">
+                                        <0; 100>
+                                    </small>
+                                </div>
+                                <div class="card-body text-center pt-0">
+                                    <!--  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                      Więcej...            </button> -->
+                                    <button type="submit" class="btn btn-primary">Start</button>
+                                </div>
+                            </form>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal - to może się przyda -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Więcej info</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item"
+                                src="https://www.youtube.com/embed/otzWCWpuW-A?ecver=1&amp" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK, rozumiem</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of modal -->
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+</body>
+</html>

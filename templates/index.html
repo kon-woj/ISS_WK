@@ -79,7 +79,7 @@
                         <div class="card-body pb-1">
                             <p class="card-title h5 text-center ">Wpisz parametry symulacji: </p>
                             <p class="card-text ">
-                            <form action="http://localhost:5000/" method="POST" class="needs-validation" >
+                            <form action={{url_for('index')}} method="POST" class="needs-validation" >
                                 <div class="form-group">
                                     <label for="initial_lvl">Poziom początkowy:</label><br>
                                     <input type="number" step="any" id="initial_lvl" name="initial_lvl" required>

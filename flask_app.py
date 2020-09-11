@@ -1,8 +1,7 @@
 import math
-from flask import Flask, render_template, request
-
 import plotly
 import json
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 sim_results = []
@@ -10,7 +9,6 @@ global_Tp = 0.05
 
 
 def runSimulation(sim_parameters):
-    czas_prob = sim_parameters["czas_prob"]
     czas_sym = sim_parameters["czas_sym"]
     kp = sim_parameters["kp"]
     Tp = sim_parameters["Tp"]
@@ -20,8 +18,6 @@ def runSimulation(sim_parameters):
     B = sim_parameters["B"]
     pocz_poziom = float(sim_parameters["pocz_poz"])
     zadany_poziom = float(sim_parameters["zad_poz"])
-
-    n = czas_sym / czas_prob  # Liczba próbek
 
     poziom = pocz_poziom
     e_sum = 0
@@ -79,7 +75,7 @@ def index():
         result = request.form
 
         # Ziegler-Nichols
-        Ku = 162
+        Ku = 202
         Pu = 0.1
 
         zn_kp = Ku * 0.6
@@ -87,14 +83,15 @@ def index():
         zn_Td = Pu / 8.0
 
         user_parameters = {
-            "czas_prob": global_Tp,
             "czas_sym": 500,
             "kp": zn_kp,
             "Tp": global_Tp,
+            "Td": 0,
+            # "Ti": float('inf'),
             "Td": zn_Td,
-            "Ti": zn_Ti * 10,
-            "A": 4,
-            "B": 0.25,
+            "Ti": zn_Ti * 100,
+            "A": 5,
+            "B": 0.5,
             "pocz_poz": result["initial_lvl"],
             "zad_poz": result["desired_lvl"]
         }

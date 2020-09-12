@@ -89,7 +89,7 @@ def index():
             "Td": 0,
             # "Ti": float('inf'),
             "Td": zn_Td,
-            "Ti": zn_Ti * 100,
+            "Ti": zn_Ti*10,
             "A": 5,
             "B": 0.5,
             "pocz_poz": result["initial_lvl"],

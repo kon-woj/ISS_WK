@@ -3,11 +3,15 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 from casadi import *
+from do_mpc.data import save_results, load_results
 
 
 def run_mpc_simulation(sim_parameters):
-    x0 = float(sim_parameters["pocz_poz"])
+    x0 = np.array(float(sim_parameters["pocz_poz"]))
     desired_lvl = float(sim_parameters["zad_poz"])
+    Tp = sim_parameters["Tp"]
+    sim_time = sim_parameters['czas_sym']
+
     model_type = 'continuous'
     model = do_mpc.model.Model(model_type)
 
@@ -19,8 +23,8 @@ def run_mpc_simulation(sim_parameters):
     # A = model.set_variable('parameter', 'A')
     # Beta = model.set_variable('parameter', 'Beta')
     # hardcoded parameters
-    A = 5
-    Beta = 0.5
+    A = sim_parameters["A"]
+    Beta = sim_parameters["B"]
 
     # model.set_rhs('h', (Q_d - Beta * h) / A)
 
@@ -34,7 +38,7 @@ def run_mpc_simulation(sim_parameters):
     # Optimizer paramaters
     setup_mpc = {
         'n_horizon': 10,
-        't_step': 0.1,
+        't_step': Tp,
         'n_robust': 1,
         'store_full_solution': True,
     }
@@ -72,7 +76,7 @@ def run_mpc_simulation(sim_parameters):
         'integration_tool': 'idas',
         'abstol': 1e-10,
         'reltol': 1e-10,
-        't_step': 0.1
+        't_step': Tp
     }
     simulator.set_param(**params_simulator)
     simulator.setup()
@@ -83,24 +87,40 @@ def run_mpc_simulation(sim_parameters):
     estimator.x0 = x0
     mpc.set_initial_guess()
 
-    mpc_graphics = do_mpc.graphics.Graphics(mpc.data)
-    sim_graphics = do_mpc.graphics.Graphics(simulator.data)
-    fig, ax = plt.subplots(2, sharex=True, figsize=(16,9))
-    fig.align_ylabels()
+    # mpc_graphics = do_mpc.graphics.Graphics(mpc.data)
+    # sim_graphics = do_mpc.graphics.Graphics(simulator.data)
+    # fig, ax = plt.subplots(2, sharex=True, figsize=(16,9))
+    # fig.align_ylabels()
+    #
+    # mpl.rcParams['font.size'] = 18
+    # mpl.rcParams['axes.grid'] = True
+    #
+    # for g in [sim_graphics, mpc_graphics]:
+    #     g.add_line(var_type='_x', var_name='h', axis=ax[0])
+    #     g.add_line(var_type='_u', var_name='Q_d', axis=ax[1])
 
-    mpl.rcParams['font.size'] = 18
-    mpl.rcParams['axes.grid'] = True
+    simulator.reset_history()
+    simulator.x0 = x0
+    mpc.reset_history()
 
-    for g in [sim_graphics, mpc_graphics]:
-        g.add_line(var_type='_x', var_name='h', axis=ax[0])
-        g.add_line(var_type='_u', var_name='Q_d', axis=ax[1])
-
-    # u0 = np.zeros((1, 1))
-    for i in range(100):
+    n = round(sim_time / Tp)   # number of steps equal to PID simulation
+    for i in range(n):
         u0 = mpc.make_step(x0)
         x0 = simulator.make_step(u0)
 
+    save_results([mpc], overwrite=True)
+    results = load_results('./results/results.pkl')
+    h_results = results['mpc']['_x']
+    u_results = results['mpc']['_u']
+
+    mpc_results = {
+        "h": h_results,
+        "u": u_results
+    }
+
+    return mpc_results
+
     # Plot results until current time
-    sim_graphics.plot_results()
-    sim_graphics.reset_axes()
-    plt.show()
+    # sim_graphics.plot_results()
+    # sim_graphics.reset_axes()
+    # plt.show()

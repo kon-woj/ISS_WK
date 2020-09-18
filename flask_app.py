@@ -2,13 +2,15 @@ import math
 import plotly
 import json
 from flask import Flask, render_template, request
+import mpc_sim
+import numpy as np
+
 
 app = Flask(__name__)
-sim_results = []
-global_Tp = 0.05
+global_Tp = 0.1
 
-
-def runSimulation(sim_parameters):
+def run_simulation(sim_parameters):
+    sim_results = []
     czas_sym = sim_parameters["czas_sym"]
     kp = sim_parameters["kp"]
     Tp = sim_parameters["Tp"]
@@ -23,7 +25,6 @@ def runSimulation(sim_parameters):
     e_sum = 0
     t = 0
     e_poprzedni = 0
-    u_poprzedni = 0
     ListaPoziom = []
     ListaN = []
     ListaU = []
@@ -47,7 +48,7 @@ def runSimulation(sim_parameters):
         if u < u_min:
             u = u_min
         ListaU.append(u)
-        Tp = global_Tp / (1 + 0.01 * abs(u - u_poprzedni) / Tp)
+        # Tp = global_Tp / (1 + 0.01 * abs(u - u_poprzedni) / Tp)
         poziom = (1 / A) * (-B * math.sqrt(poziom) + u) * Tp + poziom
         if poziom < 0: poziom = 0
         if poziom > 100: poziom = 100
@@ -55,19 +56,18 @@ def runSimulation(sim_parameters):
         if u < u_max and u > 0:
             e_sum += e
         e_poprzedni = e
-        u_poprzedni = u
         if abs(e) < 0.01 * abs(zadany_poziom - pocz_poziom):
             stop_counter += 1
         if stop_counter > 3 and not stop_condition:
-            czas_sym = t + 1 * t
+            czas_sym = 1.5*t
             stop_condition = True
 
-    sim_results.clear()
     sim_results.append(ListaN)
     sim_results.append(ListaPoziom)
     sim_results.append(ListaU)
     sim_results.append(ListaE)
 
+    return sim_results, t
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -86,7 +86,7 @@ def index():
             "czas_sym": 500,
             "kp": zn_kp,
             "Tp": global_Tp,
-            "Td": 0,
+            # "Td": 0,
             # "Ti": float('inf'),
             "Td": zn_Td,
             "Ti": zn_Ti*10,
@@ -96,26 +96,38 @@ def index():
             "zad_poz": result["desired_lvl"]
         }
 
-        runSimulation(user_parameters)
-        ids, plot_json = create_plot()
+        pid_results, sim_time = run_simulation(user_parameters)
+
+        user_parameters['czas_sym'] = sim_time
+        mpc_results = mpc_sim.run_mpc_simulation(user_parameters)
+        ids, plot_json = create_plot(pid_results, mpc_results)
+
 
         return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters)
 
     return render_template('index.html')
 
 
-def create_plot():
-    lista_t = sim_results[0]
-    ListaPoziom = sim_results[1]
-    ListaU = sim_results[2]
-    ListaE = sim_results[3]
+def create_plot(pid, mpc):
+    lista_t = pid[0]
+    ListaPoziom = pid[1]
+    ListaU = pid[2]
+    ListaE = pid[3]
 
+    h_mpc = list(mpc['h'].flatten())
+    u_mpc = list(mpc['u'].flatten()
+                 )
     graphs = [
         dict(
             data=[
                 dict(
                     x=lista_t,
                     y=ListaPoziom,
+                    type='scatter'
+                ),
+                dict(
+                    x=lista_t,
+                    y=h_mpc,
                     type='scatter'
                 )
             ],
@@ -135,6 +147,11 @@ def create_plot():
                 dict(
                     x=lista_t,
                     y=ListaU,
+                    type='scatter'
+                ),
+                dict(
+                    x=lista_t,
+                    y=u_mpc,
                     type='scatter'
                 )
             ],

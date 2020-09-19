@@ -14,9 +14,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <!-- Plotly.js -->
     <script src="static/plotly-latest.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="loading-bar.css"/>
+    <script type="text/javascript" src="loading-bar.js"></script>
 </head>
 
-<body>
+<body onload="foo()">
+  <script>
+
+  function foo() {
+  var x = document.getElementById("myItem");
+  x.hidden = true;
+
+}
+</script>
 <!-- Navbar Component -->
 <nav class="navbar navbar-expand navbar-light bg-custom p-0 pl-1 mb-4 mt-4">
 	 <div class="container justify-content-center">
@@ -24,7 +34,7 @@
 	</div>
 </nav>
 <!-- End of navbar -->
-<div class="container">
+<div  class="container">
     <div class="row">
         <div class="col-12">
             <div class="card text-center ">
@@ -32,12 +42,10 @@
                     <div class="row ">
                         <div class="col-12" data-toggle="tooltip" data-placement="left"
                              title="Poziom wody">
-                            <div class="progress mt-2">
-                                <div class="progress-bar  progress-bar-striped progress-bar-animated bg-info"
-                                     role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0"
-                                     aria-valuemax="100">25%
-                                </div>
+                            <div id="hello">
+                                <p class="text-center">Naciśnij start, aby rozpocząć symulację</p>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -77,7 +85,7 @@
 
                     <div class="row card-body pt-0 pb-0">
                         <div class="card-body pb-1">
-                            <p class="card-title h5 text-center ">Wpisz parametry symulacji: </p>
+                            <p class="card-title h5 text-center ">Wpisz parametry symulacji:</p>
                             <p class="card-text ">
                             <form action={{url_for('index')}} method="POST" class="needs-validation" >
                                 <div class="form-group">
@@ -98,9 +106,27 @@
                                     </small>
                                 </div>
                                 <div class="card-body text-center pt-0">
-                                    <!--  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                                      Więcej...            </button> -->
-                                    <button type="submit" class="btn btn-primary">Start</button>
+
+                                    <button type="submit" class="btn btn-primary" onclick="myFunction()">Start</button>
+
+                                    <script>
+                                    function myFunction() {
+                                     var x = document.getElementById("myDIV");
+                                     x.hidden=false;
+
+                                }</script>
+
+                                    <div id="myItem1" data-preset="bubble"  style="width:100%;height:300px"
+                                    </div>
+                                    <script>
+                                      /* construct manually */
+                                      var bar1 = new ldBar("#myItem1");
+                                      /* ldBar stored in the element */
+                                      var bar2 = document.getElementById('myItem1').ldBar;
+                                      bar1.set({{y}});
+                                    </script>
+
+
                                 </div>
                             </form>
                             </p>
@@ -111,31 +137,7 @@
         </div>
     </div>
 
-    <!-- Modal - to może się przyda -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Więcej info</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="embed-responsive-item"
-                                src="https://www.youtube.com/embed/otzWCWpuW-A?ecver=1&amp" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK, rozumiem</button>
 
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- end of modal -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -24,6 +24,7 @@ def run_simulation(sim_parameters):
     poziom = pocz_poziom
     e_sum = 0
     t = 0
+    e = zadany_poziom - poziom
     e_poprzedni = 0
     ListaPoziom = []
     ListaN = []
@@ -34,24 +35,32 @@ def run_simulation(sim_parameters):
     u_max = 10
     u_min = 0
 
+    u = kp * (e + Tp / Ti * e_sum + Td / Tp * (e - e_poprzedni))
+    if u > u_max:
+        u = u_max
+    if u < u_min:
+        u = u_min
+
     stop_condition = False
     stop_counter = 0
 
     while t < czas_sym:
         ListaN.append(t)
         ListaPoziom.append(poziom)
-        e = zadany_poziom - poziom
         ListaE.append(e)
+        ListaU.append(u)
+
         u = kp * (e + Tp / Ti * e_sum + Td / Tp * (e - e_poprzedni))
         if u > u_max:
             u = u_max
         if u < u_min:
             u = u_min
-        ListaU.append(u)
+
         # Tp = global_Tp / (1 + 0.01 * abs(u - u_poprzedni) / Tp)
         poziom = (1 / A) * (-B * math.sqrt(poziom) + u) * Tp + poziom
         if poziom < 0: poziom = 0
         if poziom > 100: poziom = 100
+        e = zadany_poziom - poziom
         t += Tp
         if u < u_max and u > 0:
             e_sum += e
@@ -66,6 +75,8 @@ def run_simulation(sim_parameters):
     sim_results.append(ListaPoziom)
     sim_results.append(ListaU)
     sim_results.append(ListaE)
+    print(len(ListaPoziom))
+    print(len(ListaU))
 
     return sim_results, t
 
@@ -101,9 +112,10 @@ def index():
 
         user_parameters['czas_sym'] = sim_time
         mpc_results = mpc_sim.run_mpc_simulation(user_parameters)
+
         ids, plot_json = create_plot(pid_results, mpc_results, result["desired_lvl"])
 
-        return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters)
+        return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters, y=result["desired_lvl"])
 
     return render_template('index.html')
 
@@ -128,13 +140,19 @@ def create_plot(pid, mpc, desired_lvl):
                     x=lista_t,
                     y=ListaPoziom,
                     type='scatter',
-                    name='PID'
+                    name='PID',
+                    line=dict(
+                        shape='spline'
+                    )
                 ),
                 dict(
                     x=lista_t,
                     y=h_mpc,
                     type='scatter',
-                    name='MPC'
+                    name='MPC',
+                    line=dict(
+                        shape='spline'
+                    )
                 )
             ],
             layout=dict(
@@ -184,13 +202,19 @@ def create_plot(pid, mpc, desired_lvl):
                     x=lista_t,
                     y=ListaE,
                     type='scatter',
-                    name='PID'
+                    name='PID',
+                    line=dict(
+                        shape='spline'
+                    )
                 ),
                 dict(
                     x=lista_t,
                     y=e_mpc,
                     type='scatter',
-                    name='MPC'
+                    name='MPC',
+                    line=dict(
+                        shape='spline'
+                    )
                 )
             ],
             layout=dict(

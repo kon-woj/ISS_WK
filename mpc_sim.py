@@ -7,6 +7,7 @@ import matplotlib as mpl
 
 def run_mpc_simulation(sim_parameters):
     x0 = np.array(float(sim_parameters["pocz_poz"]))
+    u0 = np.array(0)
     desired_lvl = float(sim_parameters["zad_poz"])
     Tp = sim_parameters["Tp"]
     sim_time = sim_parameters['czas_sym']
@@ -102,8 +103,12 @@ def run_mpc_simulation(sim_parameters):
 
     n = round(sim_time / Tp)   # number of steps equal to PID simulation
     for i in range(n):
+        # u0 = mpc.make_step(x0)
+        # x0 = simulator.make_step(u0)
+
         u0 = mpc.make_step(x0)
-        x0 = simulator.make_step(u0)
+        y_next = simulator.make_step(u0)
+        x0 = estimator.make_step(y_next)
 
     # Plot results until current time
     # sim_graphics.plot_results()

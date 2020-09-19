@@ -35,7 +35,7 @@ def run_mpc_simulation(sim_parameters):
 
     # Optimizer paramaters
     setup_mpc = {
-        'n_horizon': 10,
+        'n_horizon': 5,
         't_step': Tp,
         'n_robust': 1,
         'store_full_solution': True,

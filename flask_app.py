@@ -5,9 +5,9 @@ from flask import Flask, render_template, request
 import mpc_sim
 import numpy as np
 
-
 app = Flask(__name__)
 global_Tp = 0.1
+
 
 def run_simulation(sim_parameters):
     sim_results = []
@@ -59,7 +59,7 @@ def run_simulation(sim_parameters):
         if abs(e) < 0.01 * abs(zadany_poziom - pocz_poziom):
             stop_counter += 1
         if stop_counter > 3 and not stop_condition:
-            czas_sym = 1.5*t
+            czas_sym = 1.5 * t
             stop_condition = True
 
     sim_results.append(ListaN)
@@ -69,14 +69,15 @@ def run_simulation(sim_parameters):
 
     return sim_results, t
 
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
         result = request.form
 
         # Ziegler-Nichols
-        Ku = 202
-        Pu = 0.1
+        Ku = 100
+        Pu = 0.2
 
         zn_kp = Ku * 0.6
         zn_Ti = Pu / 2.0
@@ -88,8 +89,8 @@ def index():
             "Tp": global_Tp,
             # "Td": 0,
             # "Ti": float('inf'),
-            "Td": zn_Td,
-            "Ti": zn_Ti*10,
+            "Td": zn_Td / 10,
+            "Ti": zn_Ti * 10,
             "A": 5,
             "B": 0.5,
             "pocz_poz": result["initial_lvl"],
@@ -100,35 +101,40 @@ def index():
 
         user_parameters['czas_sym'] = sim_time
         mpc_results = mpc_sim.run_mpc_simulation(user_parameters)
-        ids, plot_json = create_plot(pid_results, mpc_results)
-
+        ids, plot_json = create_plot(pid_results, mpc_results, result["desired_lvl"])
 
         return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters)
 
     return render_template('index.html')
 
 
-def create_plot(pid, mpc):
+def create_plot(pid, mpc, desired_lvl):
     lista_t = pid[0]
     ListaPoziom = pid[1]
     ListaU = pid[2]
     ListaE = pid[3]
 
     h_mpc = list(mpc['h'].flatten())
-    u_mpc = list(mpc['u'].flatten()
-                 )
+    u_mpc = list(mpc['u'].flatten())
+    e_mpc = []
+    for h in h_mpc:
+        e = float(desired_lvl) - h
+        e_mpc.append(e)
+
     graphs = [
         dict(
             data=[
                 dict(
                     x=lista_t,
                     y=ListaPoziom,
-                    type='scatter'
+                    type='scatter',
+                    name='PID'
                 ),
                 dict(
                     x=lista_t,
                     y=h_mpc,
-                    type='scatter'
+                    type='scatter',
+                    name='MPC'
                 )
             ],
             layout=dict(
@@ -147,12 +153,17 @@ def create_plot(pid, mpc):
                 dict(
                     x=lista_t,
                     y=ListaU,
-                    type='scatter'
+                    type='scatter',
+                    name='PID'
                 ),
                 dict(
                     x=lista_t,
                     y=u_mpc,
-                    type='scatter'
+                    type='scatter',
+                    name='MPC',
+                    line=dict(
+                        shape='hv'
+                    )
                 )
             ],
             layout=dict(
@@ -172,7 +183,14 @@ def create_plot(pid, mpc):
                 dict(
                     x=lista_t,
                     y=ListaE,
-                    type='scatter'
+                    type='scatter',
+                    name='PID'
+                ),
+                dict(
+                    x=lista_t,
+                    y=e_mpc,
+                    type='scatter',
+                    name='MPC'
                 )
             ],
             layout=dict(

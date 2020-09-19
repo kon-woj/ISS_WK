@@ -1,10 +1,9 @@
 import do_mpc
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import numpy as np
 from casadi import *
 from do_mpc.data import save_results, load_results
-
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 def run_mpc_simulation(sim_parameters):
     x0 = np.array(float(sim_parameters["pocz_poz"]))
@@ -51,7 +50,7 @@ def run_mpc_simulation(sim_parameters):
     mpc.set_objective(mterm=mterm, lterm=lterm)
 
     # Penality for the control input
-    mpc.set_rterm(Q_d=1e-2)
+    mpc.set_rterm(Q_d=1e-4)
 
     # Lower bounds on states:
     mpc.bounds['lower', '_x', 'h'] = 0
@@ -68,8 +67,6 @@ def run_mpc_simulation(sim_parameters):
     estimator = do_mpc.estimator.StateFeedback(model)
 
     simulator = do_mpc.simulator.Simulator(model)
-
-    # simulator.set_param(t_step=0.1)
 
     params_simulator = {
         # Note: cvode doesn't support DAE systems.
@@ -91,7 +88,7 @@ def run_mpc_simulation(sim_parameters):
     # sim_graphics = do_mpc.graphics.Graphics(simulator.data)
     # fig, ax = plt.subplots(2, sharex=True, figsize=(16,9))
     # fig.align_ylabels()
-    #
+
     # mpl.rcParams['font.size'] = 18
     # mpl.rcParams['axes.grid'] = True
     #
@@ -108,6 +105,11 @@ def run_mpc_simulation(sim_parameters):
         u0 = mpc.make_step(x0)
         x0 = simulator.make_step(u0)
 
+    # Plot results until current time
+    # sim_graphics.plot_results()
+    # sim_graphics.reset_axes()
+    # plt.show()
+
     save_results([mpc], overwrite=True)
     results = load_results('./results/results.pkl')
     h_results = results['mpc']['_x']
@@ -120,7 +122,4 @@ def run_mpc_simulation(sim_parameters):
 
     return mpc_results
 
-    # Plot results until current time
-    # sim_graphics.plot_results()
-    # sim_graphics.reset_axes()
-    # plt.show()
+

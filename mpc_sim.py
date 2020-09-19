@@ -2,8 +2,6 @@ import do_mpc
 import numpy as np
 from casadi import *
 from do_mpc.data import save_results, load_results
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 
 def run_mpc_simulation(sim_parameters):
     x0 = np.array(float(sim_parameters["pocz_poz"]))
@@ -85,18 +83,6 @@ def run_mpc_simulation(sim_parameters):
     estimator.x0 = x0
     mpc.set_initial_guess()
 
-    # mpc_graphics = do_mpc.graphics.Graphics(mpc.data)
-    # sim_graphics = do_mpc.graphics.Graphics(simulator.data)
-    # fig, ax = plt.subplots(2, sharex=True, figsize=(16,9))
-    # fig.align_ylabels()
-
-    # mpl.rcParams['font.size'] = 18
-    # mpl.rcParams['axes.grid'] = True
-    #
-    # for g in [sim_graphics, mpc_graphics]:
-    #     g.add_line(var_type='_x', var_name='h', axis=ax[0])
-    #     g.add_line(var_type='_u', var_name='Q_d', axis=ax[1])
-
     simulator.reset_history()
     simulator.x0 = x0
     mpc.reset_history()
@@ -110,10 +96,6 @@ def run_mpc_simulation(sim_parameters):
         y_next = simulator.make_step(u0)
         x0 = estimator.make_step(y_next)
 
-    # Plot results until current time
-    # sim_graphics.plot_results()
-    # sim_graphics.reset_axes()
-    # plt.show()
 
     save_results([mpc], overwrite=True)
     results = load_results('./results/results.pkl')

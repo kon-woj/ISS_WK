@@ -87,7 +87,8 @@
                         <div class="card-body pb-1">
                             <p class="card-title h5 text-center ">Wpisz parametry symulacji:</p>
                             <p class="card-text ">
-                            <form action={{url_for('index')}} method="POST" class="needs-validation" >
+
+                            <form action={{url_for('index')}} method="POST" class="needs-validation" novalidate>
                                 <div class="form-group">
                                     <label for="initial_lvl">Poziom początkowy:</label><br>
                                     <input type="number" step="any" id="initial_lvl" name="initial_lvl" required>
@@ -98,9 +99,6 @@
                                 <div class="form-group">
                                     <label for="desired_lvl">Poziom docelowy:</label><br>
                                     <input type="number" step="any" id="desired_lvl" name="desired_lvl" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid state.
-                                    </div>
                                     <small id="input2HelpInline" class="text-muted">
                                         <0; 10>
                                     </small>
@@ -132,6 +130,8 @@
 
                         </p>
                     </div>
+
+                    {% if sim_params is defined %}
                     <table class="table">
                          <thead class="thead-light">
                             <tr>
@@ -196,6 +196,7 @@
                         </tr>
                         </tbody>
                     </table>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -218,6 +219,7 @@
 <script>
     (function() {
         'use strict';
+        console.log("TEST");
         window.addEventListener('load', function() {
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
             var forms = document.getElementsByClassName('needs-validation');

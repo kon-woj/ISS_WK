@@ -2,11 +2,23 @@
 body{
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
-  background: #F9F3F1;
+  background: #f9f3f1;
   color:#000;
 }
 
-  .bg-custom
-  {
-    background-color: #F9F3F1 !important;
-  }
+.bg-custom
+{
+  background-color: #F9F3F1 !important;
+}
+
+input:invalid
+{
+  border-radius: 5px;
+  border: 1px solid red;
+}
+
+input:valid
+{
+  border-radius: 5px;
+  border: 1px solid green;
+}

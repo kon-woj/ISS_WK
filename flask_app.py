@@ -95,8 +95,17 @@ def index():
         initial_lvl = float(result["initial_lvl"])
         desired_lvl = float(result["desired_lvl"])
 
-        if initial_lvl == 0:
+        if initial_lvl <= 0:
             initial_lvl = 0.001
+
+        if initial_lvl > 10:
+            initial_lvl = 10
+
+        if desired_lvl <= 0:
+            desired_lvl = 0
+
+        if desired_lvl > 10:
+            desired_lvl = 10
 
         user_parameters = {
             "czas_sym": 500,

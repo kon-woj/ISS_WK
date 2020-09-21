@@ -75,8 +75,6 @@ def run_simulation(sim_parameters):
     sim_results.append(ListaPoziom)
     sim_results.append(ListaU)
     sim_results.append(ListaE)
-    print(len(ListaPoziom))
-    print(len(ListaU))
 
     return sim_results, t
 
@@ -94,6 +92,12 @@ def index():
         zn_Ti = Pu / 2.0
         zn_Td = Pu / 8.0
 
+        initial_lvl = float(result["initial_lvl"])
+        desired_lvl = float(result["desired_lvl"])
+
+        if initial_lvl == 0:
+            initial_lvl = 0.001
+
         user_parameters = {
             "czas_sym": 500,
             "kp": zn_kp,
@@ -104,8 +108,8 @@ def index():
             "Ti": zn_Ti * 10,
             "A": 5,
             "B": 0.5,
-            "pocz_poz": result["initial_lvl"],
-            "zad_poz": result["desired_lvl"]
+            "pocz_poz": initial_lvl,
+            "zad_poz": desired_lvl
         }
 
         pid_results, sim_time = run_simulation(user_parameters)
@@ -113,9 +117,9 @@ def index():
         user_parameters['czas_sym'] = sim_time
         mpc_results = mpc_sim.run_mpc_simulation(user_parameters)
 
-        ids, plot_json = create_plot(pid_results, mpc_results, result["desired_lvl"])
+        ids, plot_json = create_plot(pid_results, mpc_results, desired_lvl)
 
-        return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters, y=result["desired_lvl"])
+        return render_template('index.html', ids=ids, plot=plot_json, sim_params=user_parameters, y=desired_lvl*10)
 
     return render_template('index.html')
 
@@ -185,12 +189,12 @@ def create_plot(pid, mpc, desired_lvl):
                 )
             ],
             layout=dict(
-                title='<b>Sygnał sterujący</b>',
+                title='<b>Zadane natężenie dopływu</b>',
                 xaxis=dict(
                     title='t [s]'
                 ),
                 yaxis=dict(
-                    title='Wartość sygnału sterującego'
+                    title='Natężenie dopływu [m<sup>3</sup>/s]'
                 )
 
             )
@@ -225,7 +229,6 @@ def create_plot(pid, mpc, desired_lvl):
                 yaxis=dict(
                     title='Wartość uchybu [m]'
                 )
-
             )
         )
     ]

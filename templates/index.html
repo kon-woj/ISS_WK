@@ -19,19 +19,19 @@
 </head>
 
 <body onload="foo()">
-  <script>
+<script>
 
-  function foo() {
-  var x = document.getElementById("myItem");
-  x.hidden = true;
+    function foo() {
+        var x = document.getElementById("myItem");
+        x.hidden = true;
 
-}
+    }
 </script>
 <!-- Navbar Component -->
 <nav class="navbar navbar-expand navbar-light bg-custom p-0 pl-1 mb-4 mt-4">
-	 <div class="container justify-content-center">
-    		<h3 class="font-weight-bold">Symulacja procesu napełniania zbiornika</h3>
-	</div>
+    <div class="container justify-content-center">
+        <h3 class="font-weight-bold">Symulacja procesu napełniania zbiornika</h3>
+    </div>
 </nav>
 <!-- End of navbar -->
 <div  class="container">
@@ -45,7 +45,7 @@
                             <div id="hello">
                                 <p class="text-center">Naciśnij start, aby rozpocząć symulację</p>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                                     <label for="initial_lvl">Poziom początkowy:</label><br>
                                     <input type="number" step="any" id="initial_lvl" name="initial_lvl" required>
                                     <small id="input1HelpInline" class="text-muted">
-                                        <0; 100>
+                                        <0; 10>
                                     </small>
                                 </div>
                                 <div class="form-group">
@@ -102,7 +102,7 @@
                                         Please provide a valid state.
                                     </div>
                                     <small id="input2HelpInline" class="text-muted">
-                                        <0; 100>
+                                        <0; 10>
                                     </small>
                                 </div>
                                 <div class="card-body text-center pt-0">
@@ -110,64 +110,129 @@
                                     <button type="submit" class="btn btn-primary" onclick="myFunction()">Start</button>
 
                                     <script>
-                                    function myFunction() {
-                                     var x = document.getElementById("myDIV");
-                                     x.hidden=false;
+                                        function myFunction() {
+                                            var x = document.getElementById("myDIV");
+                                            x.hidden=false;
 
-                                }</script>
+                                        }</script>
 
                                     <div id="myItem1" data-preset="bubble"  style="width:100%;height:300px"
-                                    </div>
-                                    <script>
-                                      /* construct manually */
-                                      var bar1 = new ldBar("#myItem1");
-                                      /* ldBar stored in the element */
-                                      var bar2 = document.getElementById('myItem1').ldBar;
-                                      bar1.set({{y | safe}});
-                                    </script>
-
-
                                 </div>
-                            </form>
-                            </p>
+                                <script>
+                                    /* construct manually */
+                                    var bar1 = new ldBar("#myItem1");
+                                    /* ldBar stored in the element */
+                                    var bar2 = document.getElementById('myItem1').ldBar;
+                                    bar1.set({{y | safe}});
+                                </script>
+
+
                         </div>
+                        </form>
+
+                        </p>
                     </div>
+                    <table class="table">
+                         <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Parametr</th>
+                                <th scope="col">Wartość</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">A</th>
+                            <td>{{sim_params["A"]}}[m<sup>2</sup>]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">&beta;</th>
+                            <td>{{sim_params["B"]}}[m<sup>5/2</sup>/s]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Tp</th>
+                            <td>{{sim_params["Tp"]}}[s]</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="colgroup">PID</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">kp</th>
+                            <td>{{sim_params["kp"]}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Td</th>
+                            <td>{{sim_params["Td"]}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Ti</th>
+                            <td>{{sim_params["Ti"]}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="colgroup">MPC</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">horyzont predykcji</th>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ograniczenie &Delta;u</th>
+                            <td>0.0001</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
-    <script>
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
-    </script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
 </body>
 </html>

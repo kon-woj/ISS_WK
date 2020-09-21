@@ -54,7 +54,7 @@ def run_mpc_simulation(sim_parameters):
     # Lower bounds on states:
     mpc.bounds['lower', '_x', 'h'] = 0
     # Upper bounds on states
-    mpc.bounds['upper', '_x', 'h'] = 100
+    mpc.bounds['upper', '_x', 'h'] = 10
 
     # Lower bounds on inputs:
     mpc.bounds['lower', '_u', 'Q_d'] = 0
@@ -77,7 +77,6 @@ def run_mpc_simulation(sim_parameters):
     simulator.set_param(**params_simulator)
     simulator.setup()
 
-    # x0 = np.array(0.01)
     simulator.x0 = x0
     mpc.x0 = x0
     estimator.x0 = x0
@@ -89,13 +88,9 @@ def run_mpc_simulation(sim_parameters):
 
     n = round(sim_time / Tp)   # number of steps equal to PID simulation
     for i in range(n):
-        # u0 = mpc.make_step(x0)
-        # x0 = simulator.make_step(u0)
-
         u0 = mpc.make_step(x0)
         y_next = simulator.make_step(u0)
         x0 = estimator.make_step(y_next)
-
 
     save_results([mpc], overwrite=True)
     results = load_results('./results/results.pkl')

@@ -91,14 +91,14 @@
                             <form action={{url_for('index')}} method="POST" class="needs-validation" novalidate>
                                 <div class="form-group">
                                     <label for="initial_lvl">Poziom początkowy:</label><br>
-                                    <input type="number" step="any" id="initial_lvl" name="initial_lvl" required>
+                                    <input type="number" step="any" id="initial_lvl" name="initial_lvl" min="0" max="10" required>
                                     <small id="input1HelpInline" class="text-muted">
                                         <0; 10>
                                     </small>
                                 </div>
                                 <div class="form-group">
                                     <label for="desired_lvl">Poziom docelowy:</label><br>
-                                    <input type="number" step="any" id="desired_lvl" name="desired_lvl" required>
+                                    <input type="number" step="any" id="desired_lvl" name="desired_lvl" min="0" max="10" required>
                                     <small id="input2HelpInline" class="text-muted">
                                         <0; 10>
                                     </small>

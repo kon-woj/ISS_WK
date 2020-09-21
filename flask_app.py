@@ -95,6 +95,9 @@ def index():
         initial_lvl = float(result["initial_lvl"])
         desired_lvl = float(result["desired_lvl"])
 
+        if initial_lvl == 0:
+            initial_lvl = 0.001
+
         user_parameters = {
             "czas_sym": 500,
             "kp": zn_kp,

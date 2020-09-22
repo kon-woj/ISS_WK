@@ -26,4 +26,5 @@ input:valid
 .custom-range
 {
   width: 80%;
+  border: none !important;
 }

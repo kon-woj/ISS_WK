@@ -59,7 +59,7 @@ def run_simulation(sim_parameters):
         # Tp = global_Tp / (1 + 0.01 * abs(u - u_poprzedni) / Tp)
         poziom = (1 / A) * (-B * math.sqrt(poziom) + u) * Tp + poziom
         if poziom < 0: poziom = 0
-        if poziom > 100: poziom = 100
+        if poziom > 10: poziom = 10
         e = zadany_poziom - poziom
         t += Tp
         if u < u_max and u > 0:
@@ -94,20 +94,23 @@ def index():
 
         initial_lvl = float(result["initial_lvl"])
         desired_lvl = float(result["desired_lvl"])
+        A = float(result["A"])
+        beta = float(result["beta"])
+        Tp = float(result["Tp"])
 
         if initial_lvl == 0:
             initial_lvl = 0.001
 
         user_parameters = {
-            "czas_sym": 500,
+            "czas_sym": 30,
             "kp": zn_kp,
-            "Tp": global_Tp,
+            "Tp": Tp,
             # "Td": 0,
             # "Ti": float('inf'),
             "Td": zn_Td / 10,
             "Ti": zn_Ti * 10,
-            "A": 5,
-            "B": 0.5,
+            "A": A,
+            "B": beta,
             "pocz_poz": initial_lvl,
             "zad_poz": desired_lvl
         }

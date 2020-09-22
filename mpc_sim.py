@@ -4,11 +4,10 @@ from casadi import *
 from do_mpc.data import save_results, load_results
 
 def run_mpc_simulation(sim_parameters):
-    x0 = np.array(float(sim_parameters["pocz_poz"]))
-    u0 = np.array(0)
-    desired_lvl = float(sim_parameters["zad_poz"])
+    x0 = np.array(sim_parameters["pocz_poz"])
+    desired_lvl = sim_parameters["zad_poz"]
     Tp = sim_parameters["Tp"]
-    sim_time = sim_parameters['czas_sym']
+    sim_time = float(sim_parameters['czas_sym'])
 
     model_type = 'continuous'
     model = do_mpc.model.Model(model_type)
@@ -23,8 +22,6 @@ def run_mpc_simulation(sim_parameters):
     # hardcoded parameters
     A = sim_parameters["A"]
     Beta = sim_parameters["B"]
-
-    # model.set_rhs('h', (Q_d - Beta * h) / A)
 
     model.set_rhs('h', dh)
     euler_lagrange = A*dh + Beta*sqrt(h) - Q_d

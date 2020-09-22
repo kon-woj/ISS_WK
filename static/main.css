@@ -22,3 +22,8 @@ input:valid
   border-radius: 5px;
   border: 1px solid green;
 }
+
+.custom-range
+{
+  width: 80%;
+}
